@@ -2,7 +2,7 @@
 ![Preview IMG](https://github.com/ravindu644/Kitchen/assets/126038496/61fc39dd-5fe6-4fb5-8c06-0b6a6b2c937b)
 **Description:** This script can unpack, repack, and sign the boot images of Android without breaking Android Verified Boot (AVB).
 
-**Requirements:** Linux Environment (Termux/PC)
+**Requirements:** Linux Environment (PC)
 
 ---
 
