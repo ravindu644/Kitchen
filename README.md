@@ -17,8 +17,11 @@
 ```
 
 - Replace boot.img with your boot image's name.
-- Make edits to the unpacked boot image in the "workspace" folder.
+- Make edits to the unpacked boot image in the "workspace" folder. <br>
+<hr>
 
+**❗Notes:** You can only use the **OEM boot image** which is provided by your manufacturer inside your firmware package. Else, the script will throw an error while signing the modified boot image.
+<hr>
 **04.** To Repack the boot image, use this command :
 ```
 ./kitchen repack
