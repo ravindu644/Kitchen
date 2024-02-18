@@ -14,7 +14,7 @@
 **03.** To Unpack the boot image, use this command :
 
 ```
-./kitchen unpack boot.img
+bash kitchen unpack boot.img
 ```
 
 - Replace boot.img with your boot image's name.
@@ -25,7 +25,7 @@
 **04.** To Repack the boot image, use this command :
 
 ```
-./kitchen repack
+bash kitchen repack
 ```
 
 ---
