@@ -1,0 +1,9 @@
+Available commands : unpack, repack
+
+01. To Unpack your boot.img :
+
+./kitchen unpack boot.img
+
+02. To Repack your boot.img :
+
+./kitchen repack

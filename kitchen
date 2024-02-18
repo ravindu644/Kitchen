@@ -1,0 +1,127 @@
+#! /bin/bash
+################################################################################
+# Copyright (c) [2024] [Ravindu Deshan]
+#
+# Unauthorized publication is prohibited. Forks and personal use are allowed.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+################################################################################
+
+DIR=$(pwd)
+CMD=$1
+BOOTIMG=$2
+MAGISKBOOT=$DIR/bin/magiskboot
+AVBTOOL=$DIR/bin/avbtool
+
+chmod +x $DIR/bin/*
+
+banner(){
+    clear
+    source res/colors
+    source res/banner
+}
+
+requirements(){
+    if [ ! -z "$BOOTIMG" ]; then
+        echo "$BOOTIMG" > "$DIR/res/.tmp1"
+    fi
+    set -e
+    if [ ! -f "$DIR/res/.req" ]; then
+        echo -e "${RED}[+] Installing Requirements...${RESET}\n"
+        sudo apt update -y > /dev/null 2>&1
+        echo -e "\n${GREEN}[i] OpenSSL${RESET}\n" ; sudo apt install openssl -y
+        echo -e "\n${GREEN}[i] Python${RESET}\n" ; sudo apt install python3 python-is-python3 -y
+        echo -e "\n${RED}[i] Done...${RESET}\n"
+        echo "DON'T DELETE ME" > "$DIR/res/.req"
+    elif [ -f "$DIR/res/.req" ]; then
+        echo "" > /dev/null                       
+    else
+        echo -e "${BOLD_RED}[x] Error: Requirements installation failed.${RESET}"
+    fi
+}
+
+key(){
+    if [ ! -d "$DIR/res/key" ]; then
+        mkdir "$DIR/res/key"
+    fi
+    if [ ! -f "$DIR/res/key/sign.pem" ]; then
+        echo -e "${BOLD_YELLOW}[+] Generating a signing key...${RESET}\n"    
+        openssl genrsa -f4 -out "$DIR/res/key/sign.pem" 4096 > /dev/null 2>&1
+    fi
+}
+
+usage(){
+    if [ -z "$CMD" ]; then
+        echo -e "${BOLD_RED}[x] No Command Specified..!${RESET}\n"
+        cat res/usage
+        echo -e "\n${BOLD_WHITE}======================================${RESET}"
+        exit 1
+    fi
+}
+
+checks(){
+    key
+    if [ ! -d "workspace" ]; then
+        mkdir workspace
+    fi
+    if [ "$CMD" == "unpack" ] && [ ! -f "$BOOTIMG" ]; then
+        echo -e "${BOLD_RED}[x] Couldn't find the provided Boot image '${BOOTIMG}' !${RESET}\n"
+    fi
+    if [ ! "$CMD" == "unpack" ] && [ ! "$CMD" == "repack" ]; then
+        echo -e "${BOLD_RED}[x] Invalid Command Specified '${CMD}' !${RESET}\n"
+        exit 1    
+    fi
+}
+
+clean(){
+    rm -rf "$DIR/workspace"
+    rm "$DIR/res/.tmp" > /dev/null 2>&1
+    rm "$DIR/res/.tmp1" > /dev/null 2>&1
+}
+
+unpack(){
+rm -rf "$DIR/workspace/*"
+echo -e "${BOLD_GREEN}[i] Unpacking ${BOOTIMG}...${RESET}\n"
+echo "$DIR/${BOOTIMG}" > "$DIR/res/.tmp"
+cp "$DIR/${BOOTIMG}" "$DIR/workspace" ; cd "$DIR/workspace"
+$MAGISKBOOT unpack "$BOOTIMG"
+if [ -f "ramdisk.cpio" ]; then
+    RAMDISK=1
+    $MAGISKBOOT cpio ramdisk.cpio extract
+fi
+cd "$DIR"
+echo -e "\n${BOLD_GREEN}[i] Unpacking Done..! ${RESET}\n"
+}
+
+sign(){
+    echo -e "\n${BOLD_YELLOW}[+] Signing New Boot image...${RESET}\n" 
+    python3 "$AVBTOOL" extract_public_key --key "$DIR/res/key/sign.pem" --output "$DIR/res/key/sign.pub.bin"
+    python3 "$AVBTOOL" add_hash_footer --partition_name boot --partition_size $(wc -c new-boot.img |cut -f 1 -d ' ') --image new-boot.img --key "$DIR/res/key/sign.pem" --algorithm SHA256_RSA4096
+}
+
+repack(){
+    echo -e "${BOLD_GREEN}[i] Repacking ${BOOTIMG}...${RESET}\n"
+    cd "$DIR/workspace"
+    $MAGISKBOOT repack "$(cat $DIR/res/.tmp)" new-boot.img
+    sign
+    mv new-boot.img "../$(cat $DIR/res/.tmp1)-new(signed).img"
+    cd $DIR
+    echo -e "\n${BOLD_GREEN}[i] Repacking Done..! ${RESET}\n"
+    echo -e "\n${BOLD_BLUE}[i] Output : $(cat $DIR/res/.tmp1)-new(signed).img ${RESET}\n"
+    clean
+}
+
+run(){
+    if [ "$CMD" == "unpack" ]; then
+        unpack
+    fi
+    if [ "$CMD" == "repack" ]; then
+        repack
+    fi
+}
+
+banner
+requirements
+usage
+checks
+run

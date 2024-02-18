@@ -1,0 +1,7 @@
+#!/bin/bash
+echo -e "${BOLD_WHITE}======================================${RESET}
+${BOLD_GREEN} - Boot Image Unpacker and Repacker - ${RESET}
+${YELLOW}\t       v1.0 ${RESET}
+${BLUE}\t  by @ravindu644 ${RESET}
+${BOLD_WHITE}======================================${RESET}
+"
