@@ -1,8 +1,8 @@
 ## Kitchen (Boot image unpacker and repacker)
+<img src="https://github.com/ravindu644/Kitchen/assets/126038496/61fc39dd-5fe6-4fb5-8c06-0b6a6b2c937b" width="55%"><br>
+**Description:** This script can unpack, repack, and sign the boot images of Android without breaking Android Verified Boot (AVB).
 
-**Description :** This script can unpack, repack, and sign the boot images of Android without breaking Android Verified Boot (AVB).
-
-**Requirements :** Linux Environmnt (Termux/PC)
+**Requirements:** Linux Environment (Termux/PC)
 <hr>
 
 ### Usage :
