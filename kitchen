@@ -28,9 +28,18 @@ requirements(){
     set -e
     if [ ! -f "$DIR/res/.req" ]; then
         echo -e "${RED}[+] Installing Requirements...${RESET}\n"
-        sudo apt update -y > /dev/null 2>&1
-        echo -e "\n${GREEN}[i] OpenSSL${RESET}\n" ; sudo apt install openssl -y
-        echo -e "\n${GREEN}[i] Python${RESET}\n" ; sudo apt install python3 python-is-python3 -y
+        if command -v pkg &> /dev/null; then
+            pkg update -y > /dev/null 2>&1
+            echo -e "\n${GREEN}[i] OpenSSL${RESET}\n" ; pkg install openssl -y
+            echo -e "\n${GREEN}[i] Python${RESET}\n" ; pkg install python -y
+        elif command -v apt &> /dev/null; then
+            sudo apt update -y > /dev/null 2>&1
+            echo -e "\n${GREEN}[i] OpenSSL${RESET}\n" ; sudo apt install openssl -y
+            echo -e "\n${GREEN}[i] Python${RESET}\n" ; sudo apt install python3 python-is-python3 -y
+        else
+            echo -e "${BOLD_RED}[x] Error: Package manager not found.${RESET}"
+            return 1
+        fi
         echo -e "\n${RED}[i] Done...${RESET}\n"
         echo "DON'T DELETE ME" > "$DIR/res/.req"
     elif [ -f "$DIR/res/.req" ]; then
