@@ -10,7 +10,16 @@
 DIR=$(pwd)
 CMD=$1
 BOOTIMG=$2
-MAGISKBOOT=$DIR/bin/magiskboot
+
+check_termux() {
+    if [ -n "$PREFIX" ] && [ "$PREFIX" != "/" ]; then
+        MAGISKBOOT=$DIR/bin/magiskboot_android
+    else
+        MAGISKBOOT=$DIR/bin/magiskboot_linux
+    fi
+}
+check_termux
+
 AVBTOOL=$DIR/bin/avbtool
 
 chmod +x $DIR/bin/*
@@ -29,11 +38,11 @@ requirements(){
     if [ ! -f "$DIR/res/.req" ]; then
         echo -e "${RED}[+] Installing Requirements...${RESET}\n"
         if command -v pkg &> /dev/null; then
-            pkg update -y > /dev/null 2>&1
-            echo -e "\n${GREEN}[i] OpenSSL${RESET}\n" ; pkg install openssl -y
+            pkg update -y
+            echo -e "\n${GREEN}[i] OpenSSL${RESET}\n" ; pkg install openssl openssl-tool -y
             echo -e "\n${GREEN}[i] Python${RESET}\n" ; pkg install python -y
         elif command -v apt &> /dev/null; then
-            sudo apt update -y > /dev/null 2>&1
+            sudo apt update -y
             echo -e "\n${GREEN}[i] OpenSSL${RESET}\n" ; sudo apt install openssl -y
             echo -e "\n${GREEN}[i] Python${RESET}\n" ; sudo apt install python3 python-is-python3 -y
         else
@@ -55,7 +64,7 @@ key(){
     fi
     if [ ! -f "$DIR/res/key/sign.pem" ]; then
         echo -e "${BOLD_YELLOW}[+] Generating a signing key...${RESET}\n"    
-        openssl genrsa -f4 -out "$DIR/res/key/sign.pem" 4096 > /dev/null 2>&1
+        openssl genrsa -f4 -out "$DIR/res/key/sign.pem" 4096
     fi
 }
 
@@ -84,8 +93,8 @@ checks(){
 
 clean(){
     rm -rf "$DIR/workspace"
-    rm "$DIR/res/.tmp" > /dev/null 2>&1
-    rm "$DIR/res/.tmp1" > /dev/null 2>&1
+    rm "$DIR/res/.tmp"
+    rm "$DIR/res/.tmp1"
 }
 
 unpack(){
