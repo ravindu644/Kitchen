@@ -1,3 +1,15 @@
+> [!TIP]
+> Use [Android_Image_Tools](https://github.com/ravindu644/Android_Image_Tools) for unpacking and repacking Android images.
+>
+> Use [Android_boot_image_editor](https://github.com/cfig/Android_boot_image_editor) for unpacking and repacking Android boot images without breaking Android Verified Boot (AVB).
+
+---
+
+> [!WARNING]
+> **End of Life (EOL) : This repository is no longer maintained and is not recommended for use.**
+
+---
+
 ## Kitchen (Boot image unpacker and repacker)
 ![Preview IMG](https://github.com/ravindu644/Kitchen/assets/126038496/61fc39dd-5fe6-4fb5-8c06-0b6a6b2c937b)
 **Description:** This script can unpack, repack, and sign the boot images of Android without breaking Android Verified Boot (AVB).
